@@ -13,18 +13,20 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('login', 'AuthApiController@login');
+Route::post('register', 'AuthApiController@register');
+Route::get('user', 'AuthApiController@user');
+Route::get('refresh', 'AuthApiController@refresh');
 
-Route::group(['prefix' => 'v1'], function () {
-    Route::post('login', 'AuthApiController@login');
-    Route::post('logout', 'AuthApiController@logout');
-    Route::post('refresh', 'AuthApiController@refresh');
-    Route::post('me', 'AuthApiController@me');
 
-    Route::group(['middleware' => 'auth'], function () {
-        Route::get('home', function () {
-            return response()->json(['message' => 'Resource accessed successfully']);
-        });
+Route::middleware('auth:api')->group(function () {
+    Route::get('verify-email', 'AuthApiController@verifyEmail');
+    Route::get('home', function () {
+        return response()->json(['message' => 'Resource accessed successfully']);
     });
+    Route::post('logout', 'AuthApiController@logout');
 
 });
+
+
 

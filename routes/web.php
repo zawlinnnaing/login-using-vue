@@ -19,10 +19,16 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
 
-Route::get('/test-api', function (){
-    return json_encode('Hi');
+Route::get('/mail-test', function () {
+    return new \App\Mail\SendVerifyEmailApi('12345');
 });
+
+Route::get('/test-url/{string}', function ($string) {
+    echo url()->full();
+});
+
+

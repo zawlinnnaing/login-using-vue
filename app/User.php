@@ -2,12 +2,16 @@
 
 namespace App;
 
+use App\Jobs\SendRegisteredEmail;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Queue\Jobs\Job;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject,MustVerifyEmail
 {
     use Notifiable;
 
@@ -17,7 +21,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','verified_token'
     ];
 
     /**
@@ -28,6 +32,7 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password', 'remember_token',
     ];
+
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -51,4 +56,12 @@ class User extends Authenticatable implements JWTSubject
         //
         return [];
     }
+
+    /**
+     * @return void
+     */
+//    public function sendEmailVerificationNotification()
+//    {
+//        SendRegisteredEmail::dispatch($this);
+//    }
 }
