@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
          $schedule->command('delete:unverified_user')
-                  ->weekly();
+                  ->everyMinute();
 //        $schedule->call(function () {
 //            Log::info("hello from laravel");
 //        })->everyMinute();

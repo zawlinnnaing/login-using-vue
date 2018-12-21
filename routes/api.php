@@ -15,14 +15,15 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'AuthApiController@login');
 Route::post('register', 'AuthApiController@register');
-Route::get('user', 'AuthApiController@user');
 Route::get('refresh', 'AuthApiController@refresh');
+Route::post('send_verification_email','AuthApiController@sendVerificationEmail');
 
 
 Route::middleware('auth:api')->group(function () {
+    Route::apiResource('user', 'AuthApiController');
     Route::get('verify-email', 'AuthApiController@verifyEmail');
     Route::get('home', function () {
-        return response()->json(['message' => 'Resource accessed successfully']);
+        return response()->json(['message' => 'Resource accessed successfully'],200     );
     });
     Route::post('logout', 'AuthApiController@logout');
 

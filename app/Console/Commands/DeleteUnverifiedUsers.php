@@ -41,6 +41,7 @@ class DeleteUnverifiedUsers extends Command
     public function handle()
     {
         //
-        User::where('email_verified_at','=',null)->delete();
+        echo "Hello from cron job";
+        User::where('email_verified_at', null)->update(['is_active' => false]);
     }
 }

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\general;
+use App\Http\Requests\Api\User\UserUpdateRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Jobs\SendEmailVerificationApi;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use function PHPSTORM_META\elementType;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
 class AuthApiController extends Controller
 {
@@ -53,9 +57,13 @@ class AuthApiController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function user()
+    public function index()
     {
-        return response()->json(auth('api')->user());
+        if (auth('api')->user() == null) {
+            return response()->json(['data' => auth('api')->user()], 401);
+        } else {
+            return response()->json(new UserResource(auth('api')->user()));
+        }
     }
 
     /**
@@ -72,7 +80,21 @@ class AuthApiController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth('api')->refresh());
+        try {
+            if (auth('api')->user() == null) {
+                auth('api')->invalidate();
+                return response()->json([
+                    'error' => 'token refresh failed',
+                    'user'  => auth('api')->user()
+                ], 401);
+            } else {
+//                return response()->json(['message' => 'hi ']);
+                return $this->respondWithToken(auth('api')->refresh());
+            }
+        } catch (TokenExpiredException $e) {
+//            auth('api')->invalidate();
+            return response()->json(['message' => 'your token has expired'], 401);
+        }
     }
 
     /**
@@ -81,20 +103,42 @@ class AuthApiController extends Controller
      */
     protected function respondWithToken($token)
     {
-        return response()->json([
-            'Authorization' => 'Bearer ' . $token,
-        ])->header('Access-Control-Expose-Headers', 'Authorization')
-            ->header('Authorization', 'Bearer ' . $token);
+        try {
+            return response()->json([
+                'Authorization' => 'Bearer ' . $token,
+                'user'          => auth('api')->user()
+            ])->header('Access-Control-Expose-Headers', 'Authorization')
+                ->header('Authorization', 'Bearer ' . $token);
+        } catch (TokenExpiredException $e) {
+            auth('api')->invalidate();
+            return response()->json(['message' => 'Your token has expired']);
+        }
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function verifyEmail(Request $request)
     {
         $token = $request->input('token');
-        $user = User::where('verified_token', '=', $token)->first();
+        $user = User::where('verified_token', $token)->first();
         $user->email_verified_at = now('UTC');
+        $user->is_active = true;
         $user->save();
         return response()->json(['message' => 'email verified successfully']);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sendVerificationEmail(Request $request)
+    {
+        $user = User::where('email', $request->input('email'))->first();
+        SendEmailVerificationApi::dispatch($user);
+        return response()->json(['message' => 'verification resend successfully']);
     }
 
     /**
@@ -103,6 +147,13 @@ class AuthApiController extends Controller
     protected function guard()
     {
         return Auth::guard('api');
+    }
+
+    public function update(UserUpdateRequest $request,$id)
+    {
+        User::find($id)->update($request->all());
+        return response()->json(new UserResource(User::find($id)),200);
+
     }
 
 }

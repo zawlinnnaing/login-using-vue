@@ -31,4 +31,8 @@ Route::get('/test-url/{string}', function ($string) {
     echo url()->full();
 });
 
+Route::get('/test-user-resource/{id}', function ($id) {
+    return new \App\Http\Resources\UserResource(\App\User::find($id));
+});
+
 

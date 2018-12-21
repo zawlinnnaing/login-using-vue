@@ -16,6 +16,7 @@ class AddTokenToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             $table->string('verified_token')->unique()->nullable();
+            $table->boolean('is_active')->default(true);
         });
     }
 
@@ -29,6 +30,7 @@ class AddTokenToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             $table->dropColumn('verified_token');
+            $table->dropColumn('is_active');
         });
     }
 }

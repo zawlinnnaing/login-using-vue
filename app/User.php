@@ -5,6 +5,7 @@ namespace App;
 use App\Jobs\SendRegisteredEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,6 +15,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject,MustVerifyEmail
 {
     use Notifiable;
+
 
     /**
      * The attributes that are mass assignable.
@@ -57,9 +59,7 @@ class User extends Authenticatable implements JWTSubject,MustVerifyEmail
         return [];
     }
 
-    /**
-     * @return void
-     */
+
 //    public function sendEmailVerificationNotification()
 //    {
 //        SendRegisteredEmail::dispatch($this);
