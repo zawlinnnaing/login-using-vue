@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\general;
+use App\Http\Requests\Api\User\UserChangePasswordRequest;
 use App\Http\Requests\Api\User\UserUpdateRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
@@ -11,7 +12,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use function PHPSTORM_META\elementType;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
 class AuthApiController extends Controller
@@ -54,6 +55,10 @@ class AuthApiController extends Controller
         return response()->json(['message' => 'account created successfully']);
     }
 
+
+    /****************** REST api actions ***********************/
+
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */
@@ -65,6 +70,20 @@ class AuthApiController extends Controller
             return response()->json(new UserResource(auth('api')->user()));
         }
     }
+
+    /**
+     * @param UserUpdateRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(UserUpdateRequest $request, $id)
+    {
+        User::find($id)->update($request->all());
+        return response()->json(new UserResource(User::find($id)), 200);
+
+    }
+
+    /****************************************************************************/
 
     /**
      * @return \Illuminate\Http\JsonResponse
@@ -149,11 +168,18 @@ class AuthApiController extends Controller
         return Auth::guard('api');
     }
 
-    public function update(UserUpdateRequest $request,$id)
+    public function changePassword(UserChangePasswordRequest $request)
     {
-        User::find($id)->update($request->all());
-        return response()->json(new UserResource(User::find($id)),200);
-
+        $request->merge(['password' => bcrypt($request->input('password'))]);
+        $user = User::find($request->input('id'));
+        if (Hash::check($request->input('old_password'),$user->password)) {
+            $user->update([
+                'password' => $request->input('password')
+            ]);
+            return response()->json(['message' => 'password changed successfully'],200);
+        } else {
+            return response()->json(['error'=> 'Old password does not match'],403);
+        }
     }
 
 }

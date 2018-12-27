@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Queue\Jobs\Job;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject,MustVerifyEmail
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use Notifiable;
 
@@ -23,7 +23,10 @@ class User extends Authenticatable implements JWTSubject,MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','verified_token'
+        'name',
+        'email',
+        'password',
+        'verified_token'
     ];
 
     /**
@@ -32,7 +35,8 @@ class User extends Authenticatable implements JWTSubject,MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
 
@@ -59,7 +63,21 @@ class User extends Authenticatable implements JWTSubject,MustVerifyEmail
         return [];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts()
+    {
+        return $this->hasMany('App\Post');
+    }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function comments()
+    {
+        return $this->hasMany('App\Posts');
+    }
 //    public function sendEmailVerificationNotification()
 //    {
 //        SendRegisteredEmail::dispatch($this);

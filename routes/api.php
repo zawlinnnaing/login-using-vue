@@ -26,7 +26,9 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(['message' => 'Resource accessed successfully'],200     );
     });
     Route::post('logout', 'AuthApiController@logout');
+    Route::post('/profile/change_password','AuthApiController@changePassword');
 
+    Route::apiResource('/{user}/post','PostApiController');
 });
 
 
