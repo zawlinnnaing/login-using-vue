@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
-class UserRequest extends FormRequest
+class CommentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +23,10 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'name'     => 'required|string|max:256',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:8'
             //
+            'description' => 'required|string',
+            'user_id' => 'required|integer'
         ];
     }
-
 }

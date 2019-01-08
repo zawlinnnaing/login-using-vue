@@ -29,6 +29,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/profile/change_password','AuthApiController@changePassword');
 
     Route::apiResource('/{user}/post','PostApiController');
+
+    Route::apiResource('/post','v2\PostApiController');
+
+    Route::apiResource('/{post}/comment','CommentApiController');
 });
 
 

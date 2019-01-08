@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\Post\PostRequest;
-use App\Http\Resources\PostResource;
+use App\Comment;
+use App\Http\Requests\Api\Comment\CommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Post;
-use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class PostApiController extends Controller
+class CommentApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @param $id
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return \Illuminate\Http\Response
      */
     public function index($id)
     {
         //
-        $posts = User::find($id)->posts()->paginate(10);
-        return PostResource::collection($posts);
-
+        $comments = CommentResource::collection(Comment::where('post_id', $id)->get());
+        return response()->json($comments, 200);
     }
 
     /**
@@ -38,36 +37,36 @@ class PostApiController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param PostRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @param CommentRequest $request
+     * @return \Illuminate\Http\Response
      */
-    public function store($id, PostRequest $request)
+    public function store($id, CommentRequest $request)
     {
         //
-        User::find($id)->posts()->create($request->only(['title', 'body']));
-        return response()->json(['message' => 'post created successfully'], 200);
+        $request->merge(['post_id' => $id]);
+        Comment::create($request->all());
+        return response()->json(['message' => 'Comment Created Successfully']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @param  int $id
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         //
-        return response()->json(new PostResource(Post::find($id)));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Post $post
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit($id)
     {
         //
     }
@@ -76,23 +75,21 @@ class PostApiController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param  \App\Post $post
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, $userId, $postId)
+    public function update(Request $request, $id)
     {
         //
-        Post::find($postId)->update($request->only(['title', 'body']));
-        return response()->json(['message' => 'post updated successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post $post
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
         //
     }

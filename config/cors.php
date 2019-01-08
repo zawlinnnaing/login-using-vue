@@ -13,7 +13,7 @@ return [
     */
    
     'supportsCredentials' => false,
-    'allowedOrigins' => ['http://localhost:8080'],
+    'allowedOrigins' => ['*'],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['Content-Type','X-Requested-With','Authorization'],
     'allowedMethods' => ['*'],

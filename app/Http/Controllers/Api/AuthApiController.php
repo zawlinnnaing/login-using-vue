@@ -65,7 +65,7 @@ class AuthApiController extends Controller
     public function index()
     {
         if (auth('api')->user() == null) {
-            return response()->json(['data' => auth('api')->user()], 401);
+            return response()->json(['data' => 'No user found'], 401);
         } else {
             return response()->json(new UserResource(auth('api')->user()));
         }
@@ -125,6 +125,7 @@ class AuthApiController extends Controller
         try {
             return response()->json([
                 'Authorization' => 'Bearer ' . $token,
+                'token'         => $token,
                 'user'          => auth('api')->user()
             ])->header('Access-Control-Expose-Headers', 'Authorization')
                 ->header('Authorization', 'Bearer ' . $token);
@@ -172,13 +173,13 @@ class AuthApiController extends Controller
     {
         $request->merge(['password' => bcrypt($request->input('password'))]);
         $user = User::find($request->input('id'));
-        if (Hash::check($request->input('old_password'),$user->password)) {
+        if (Hash::check($request->input('old_password'), $user->password)) {
             $user->update([
                 'password' => $request->input('password')
             ]);
-            return response()->json(['message' => 'password changed successfully'],200);
+            return response()->json(['message' => 'password changed successfully'], 200);
         } else {
-            return response()->json(['error'=> 'Old password does not match'],403);
+            return response()->json(['error' => 'Old password does not match'], 403);
         }
     }
 
