@@ -7,9 +7,7 @@ $factory->define(App\Comment::class, function (Faker $faker) {
     return [
         //
         'description' => $faker->paragraph,
-        'user_id'     => function () {
-            return User::where('email', 'zawlinnnaing0018@gmail.com')->first()->id;
-        },
-        'post_id'     => rand(1, 20)
+        'user_id'     => rand(1, 2),
+        'post_id'     => rand(43, 82)
     ];
 });

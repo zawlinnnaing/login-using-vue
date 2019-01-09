@@ -8,8 +8,6 @@ $factory->define(App\Post::class, function (Faker $faker) {
         //
         'title'   => $faker->sentence,
         'body'    => $faker->paragraph,
-        'user_id' => function () {
-            return User::where('email', 'zawlinnnaing0018@gmail.com')->first()->id;
-        }
+        'user_id' => rand(1,2)
     ];
 });

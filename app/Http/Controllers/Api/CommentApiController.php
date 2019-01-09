@@ -20,8 +20,8 @@ class CommentApiController extends Controller
     public function index($id)
     {
         //
-        $comments = CommentResource::collection(Comment::where('post_id', $id)->get());
-        return response()->json($comments, 200);
+        $comments = Comment::where('post_id', $id)->latest()->get();
+        return response()->json(CommentResource::collection($comments), 200);
     }
 
     /**
