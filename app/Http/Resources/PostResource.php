@@ -27,7 +27,8 @@ class PostResource extends JsonResource
             'title'      => $this->title,
             'created_at' => date('Y-M-d', strtotime($this->created_at)),
             'body'       => $this->body,
-            'author'     => User::find($this->user_id)->first()->name
+            'author'     => User::find($this->user_id)->name,
+            'user_id' => $this->user_id
         ];
     }
 }

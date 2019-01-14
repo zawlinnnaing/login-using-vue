@@ -4,7 +4,6 @@ namespace App\Http\Middleware\Api;
 
 use App\User;
 use Closure;
-use phpDocumentor\Reflection\Types\Integer;
 
 class CheckActiveUser
 {

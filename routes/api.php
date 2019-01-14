@@ -19,7 +19,7 @@ Route::get('refresh', 'AuthApiController@refresh');
 Route::post('send_verification_email', 'AuthApiController@sendVerificationEmail');
 
 Route::get('/posts', 'v2\PostApiController@index');
-Route::apiResource('/post', 'v2\PostApiController');
+Route::apiResource('/post', 'v2\PostApiController')->only(['index','show']);
 Route::resource('/{post}/comment', 'CommentApiController')->only(['index']);
 
 Route::middleware('auth:api')->group(function () {

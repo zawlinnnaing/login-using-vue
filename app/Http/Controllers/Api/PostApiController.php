@@ -20,7 +20,7 @@ class PostApiController extends Controller
     public function index($id)
     {
         //
-        $posts = User::find($id)->posts()->paginate(10);
+        $posts = User::find($id)->posts()->latest()->paginate(10);
         return PostResource::collection($posts);
 
     }
@@ -75,8 +75,9 @@ class PostApiController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \App\Post $post
+     * @param PostRequest $request
+     * @param $userId
+     * @param $postId
      * @return \Illuminate\Http\Response
      */
     public function update(PostRequest $request, $userId, $postId)
@@ -89,11 +90,13 @@ class PostApiController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post $post
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($userId, $id)
     {
         //
+        Post::destroy($id);
+        return response()->json(['message' => 'post updated successfully'], 200);
     }
 }
