@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Comment;
+use App\Events\CommentPosted;
 use App\Http\Requests\Api\Comment\CommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Post;
@@ -45,7 +46,9 @@ class CommentApiController extends Controller
     {
         //
         $request->merge(['post_id' => $id]);
-        Comment::create($request->all());
+        $comment = Comment::create($request->all());
+        broadcast(new CommentPosted(new CommentResource($comment)))->toOthers();
+//        broadcast(new CommentPosted($comment));
         return response()->json(['message' => 'Comment Created Successfully']);
     }
 
