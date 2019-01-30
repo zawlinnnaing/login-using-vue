@@ -65,4 +65,16 @@ class PostApiController extends Controller
     {
         //
     }
+
+    /************ Non Rest API section ************
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function getPostsFromUserId($userId)
+    {
+//        $posts = PostResource::collection(Post::where('user_id', $userId)->latest()->paginate(10));
+
+        return response()->json($posts);
+    }
 }

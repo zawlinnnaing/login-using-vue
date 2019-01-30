@@ -21,9 +21,12 @@ Route::get('/posts', 'v2\PostApiController@index');
 Route::apiResource('/post', 'v2\PostApiController')->only(['index', 'show']);
 Route::resource('/{post}/comment', 'CommentApiController')->only(['index']);
 
+Route::get('/get_user/{id}','UserController@getUser');
+Route::get('/get_posts/{userId}','PostApiController@index');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('refresh', 'AuthApiController@refresh');
-    Route::apiResource('user', 'AuthApiController');
+    Route::apiResource('user', 'UserController');
     Route::get('verify-email', 'AuthApiController@verifyEmail');
     Route::get('home', function () {
         return response()->json(['message' => 'Resource accessed successfully'], 200);
