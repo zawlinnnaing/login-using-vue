@@ -14,6 +14,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed verified_token
  * @property mixed deleted_at
  * @property mixed is_active
+ * @property mixed img_dir
  */
 class UserResource extends JsonResource
 {
@@ -33,7 +34,11 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'verified_token'=> $this->verified_token,
-            'active' => ($this->is_active == 1)
+            'active' => ($this->is_active == 1),
+            'img_dir' => $this->img_dir,
+            'posts_count' => $this->posts()->count(),
+            'followers_count'=> $this->followers()->count(),
+            'followed_count'=> $this->followed()->count()
         ];
     }
 }

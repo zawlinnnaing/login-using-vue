@@ -26,7 +26,7 @@ class UserUpdateRequest extends FormRequest
         return [
             //
             'name' => 'required|string|max:256',
-            'email'=> 'required|email'
+            'email'=> 'required|email',
         ];
     }
 

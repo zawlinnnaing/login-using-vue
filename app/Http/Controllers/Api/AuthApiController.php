@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Common\CommonFunctions;
+use App\Common\Exceptions\FileSizeTooLargeException;
 use App\Helpers\general;
 use App\Http\Requests\Api\User\UserChangePasswordRequest;
 use App\Http\Requests\Api\User\UserUpdateRequest;
@@ -13,13 +15,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
 class AuthApiController extends Controller
 {
-    use general;
+    use general, CommonFunctions;
 
     //
+
+    private $profileDir = 'profile_images';
 
     /**
      * AuthApiController constructor.
@@ -78,8 +83,36 @@ class AuthApiController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        User::find($id)->update($request->all());
-        return response()->json(new UserResource(User::find($id)), 200);
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(Lang::get('invalid.user_not_found'), 403);
+        }
+
+        if (!empty($request->input('image'))) {
+            $user->update($request->except('image'));
+            if (!empty($user->img_dir)) {
+                $this->deleteImage($user->img_dir, $this->profileDir);
+            }
+            $base64Image = explode(',', $request->input('image'));
+            $image = base64_decode($base64Image[1]);
+            $imageName = $user->name;
+            try {
+                $path = $this->uploadImage($image, $this->profileDir, $imageName);
+                if ($path) {
+                    $user->update([
+                        'img_dir' => $path
+                    ]);
+                    return response()->json(new UserResource(User::find($id)), 200);
+                } else {
+                    return response()->json('Upload image error', 500);
+                }
+            } catch (FileSizeTooLargeException $e) {
+                return response()->json($e->getFileTooLargeMessage(), 403);
+            }
+        } else {
+            $user->update($request->all());
+            return response()->json(new UserResource(User::find($id)), 200);
+        }
 
     }
 

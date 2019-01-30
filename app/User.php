@@ -26,7 +26,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
-        'verified_token'
+        'verified_token',
+        'img_dir'
     ];
 
     /**
@@ -82,4 +83,22 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 //    {
 //        SendRegisteredEmail::dispatch($this);
 //    }
+
+
+/*********************  Foreign Keys are defined in reverse way for followers and followed          *********************************/
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function followers()
+    {
+        return $this->hasMany('App\Follower', 'followed_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function followed()
+    {
+        return $this->hasMany('App\Follower','follower_id');
+    }
 }

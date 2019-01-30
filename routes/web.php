@@ -11,6 +11,9 @@
 |
 */
 
+
+use Illuminate\Support\Facades\File;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -42,4 +45,19 @@ Route::get('/test-broadcast-comment', function () {
     $comment = \App\Comment::find(210)->first();
     $commentResource = new \App\Http\Resources\CommentResource($comment);
     broadcast(new \App\Events\CommentPosted($commentResource));
+});
+
+Route::get('/show_image', function () {
+    return view('test.show_image');
+});
+Route::post('/test_image', function (\Illuminate\Http\Request $request) {
+//    dd($request->input('image'));
+    dd($request->file('image'));
+});
+
+
+Route::get('test_followers',function (){
+   \App\User::find(1)->first()->followed()->create(['followed_id' => 2]);
+    \App\User::find(1)->first()->followed()->create(['followed_id' => 4]);
+    dd(\App\User::find(1)->first()->followed()->get());
 });
