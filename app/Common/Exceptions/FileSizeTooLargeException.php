@@ -28,4 +28,9 @@ class FileSizeTooLargeException extends Exception
     {
         return 'File must not be larger than 1 mb';
     }
+
+    public function render()
+    {
+        return response()->json(['message' => 'File size too large'],500);
+    }
 }

@@ -39,12 +39,15 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('/{user}/post', 'PostApiController');
 
 
+
 });
 
 // Testing api endpoints
 
-Route::post('post_image', function (Request $request) {
-    return response()->json($request->input('image'), 200);
-});
+Route::post('/post_image','PostApiController@postImage');
+
+//Route::post('post_image', function (Request $request) {
+//    return response()->json($request->input('image'), 200);
+//});
 
 

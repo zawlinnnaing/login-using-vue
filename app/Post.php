@@ -9,7 +9,7 @@ class Post extends Model
     //
     protected $table = 'posts';
 
-    protected $fillable = ['id','title','body','user_id'];
+    protected $fillable = ['id', 'title', 'body', 'user_id'];
 
 
     /**
@@ -26,5 +26,10 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany('App\Comment');
+    }
+
+    public function images()
+    {
+        return $this->hasMany('App\PostImage');
     }
 }

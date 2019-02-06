@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Common\CommonFunctions;
 use App\Common\Exceptions\FileSizeTooLargeException;
 use App\Http\Requests\Api\User\UserUpdateRequest;
 use App\Http\Resources\GuestUserResource;
 use App\Http\Resources\UserResource;
 use App\User;
+use Egulias\EmailValidator\Exception\ExpectingATEXT;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Lang;
@@ -16,6 +18,7 @@ class UserController extends Controller
     //
     /****************** REST api actions ***********************/
 
+    use CommonFunctions;
 
     /**
      * @return \Illuminate\Http\JsonResponse
@@ -46,21 +49,14 @@ class UserController extends Controller
             if (!empty($user->img_dir)) {
                 $this->deleteImage($user->img_dir, $this->profileDir);
             }
-            $base64Image = explode(',', $request->input('image'));
-            $image = base64_decode($base64Image[1]);
+            $image = $this->decodeImage($request->input('image'));
             $imageName = $user->name;
-            try {
-                $path = $this->uploadImage($image, $this->profileDir, $imageName);
-                if ($path) {
-                    $user->update([
-                        'img_dir' => $path
-                    ]);
-                    return response()->json(new UserResource(User::find($id)), 200);
-                } else {
-                    return response()->json('Upload image error', 500);
-                }
-            } catch (FileSizeTooLargeException $e) {
-                return response()->json($e->getFileTooLargeMessage(), 403);
+            $path = $this->uploadImage($image, $this->profileDir, $imageName);
+            if ($path) {
+                $user->update([
+                    'img_dir' => $path
+                ]);
+                return response()->json(new UserResource(User::find($id)), 200);
             }
         } else {
             $user->update($request->all());
@@ -76,11 +72,11 @@ class UserController extends Controller
 
     public function getUser($id)
     {
-        $user = User::find($id)->first();
-        if (!empty($user)) {
+        $user = User::find($id);
+        if (!empty($user) && $user->is_active) {
             return response()->json(new GuestUserResource($user), 200);
         } else {
-            return response()->json(['message' => 'User is not found'],400);
+            return response()->json(['message' => 'User is not found'], 400);
         }
 
     }

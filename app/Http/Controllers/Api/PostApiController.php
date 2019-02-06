@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Common\CommonFunctions;
 use App\Http\Requests\Post\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Post;
+use App\PostImage;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\URL;
 
 class PostApiController extends Controller
 {
+    use CommonFunctions;
+
     /**
      * Display a listing of the resource.
      *
@@ -98,5 +104,27 @@ class PostApiController extends Controller
         //
         Post::destroy($id);
         return response()->json(['message' => 'post updated successfully'], 200);
+    }
+
+    /********************* Non-API actions   **************************
+     * @param Request $request
+     * @param $postId
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function postImage(Request $request)
+    {
+        $directoryName = 'posts';
+        $request->validate([
+            'image' => 'required'
+        ]);
+        $image = $this->decodeImage($request->input('image'));
+        $imageName = rand(0, 100000);
+        $path = $this->uploadImage($image, $directoryName, $imageName);
+        if ($path) {
+            $imgUrl = URL::to('/');
+            $imgUrl = $imgUrl . '/storage/' . $directoryName . '/' . $path;
+            return response()->json(['imgUrl' => $imgUrl], 200);
+        }
     }
 }

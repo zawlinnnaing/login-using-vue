@@ -27,7 +27,7 @@ trait CommonFunctions
             $fileName = strtolower($imageName);
             $fileName = explode(' ', $fileName);
             $fileName = implode('_', $fileName);
-            $fileName = time() . $fileName . '.jpg';
+            $fileName = time() .'_'. $fileName . '.jpg';
         }
 //        if (Storage::size($file) > 1000000) {
 //            throw new FileSizeTooLargeException();
@@ -53,6 +53,17 @@ trait CommonFunctions
             File::delete($path);
         }
 
+    }
+
+    /**
+     * @param $encodedString
+     * @return bool|string
+     */
+    public function decodeImage($encodedString)
+    {
+        $base64Image = explode(',', $encodedString);
+        $image = base64_decode($base64Image[1]);
+        return $image;
     }
 
 }
