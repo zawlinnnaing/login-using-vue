@@ -108,7 +108,6 @@ class PostApiController extends Controller
 
     /********************* Non-API actions   **************************
      * @param Request $request
-     * @param $postId
      * @return \Illuminate\Http\JsonResponse
      */
 

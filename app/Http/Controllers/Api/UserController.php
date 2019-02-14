@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Common\CommonFunctions;
 use App\Common\Exceptions\FileSizeTooLargeException;
 use App\Http\Requests\Api\User\UserUpdateRequest;
+use App\Http\Resources\FollowerResource;
 use App\Http\Resources\GuestUserResource;
 use App\Http\Resources\UserResource;
+use App\Repositories\UserRepository\UserRepository;
 use App\User;
 use Egulias\EmailValidator\Exception\ExpectingATEXT;
 use Illuminate\Http\Request;
@@ -18,7 +20,18 @@ class UserController extends Controller
     //
     /****************** REST api actions ***********************/
 
+    protected $repository;
+
     use CommonFunctions;
+
+    /**
+     * UserController constructor.
+     * @param UserRepository $userRepository
+     */
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->repository = $userRepository;
+    }
 
     /**
      * @return \Illuminate\Http\JsonResponse
@@ -79,6 +92,49 @@ class UserController extends Controller
             return response()->json(['message' => 'User is not found'], 400);
         }
 
+    }
+
+    /**
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getFollowers($userId)
+    {
+        $user = $this->repository->getFollowers($userId);
+        return response()->json(FollowerResource::collection($user), 200);
+
+    }
+
+    public function getFollowing($userId)
+    {
+        $followings = $this->repository->getFollowings($userId);
+        return response()->json(FollowerResource::collection($followings), 200);
+    }
+
+    /**
+     * @param $followerId
+     * @param $followedId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function follow($followerId, $followedId)
+    {
+        $follow = $this->repository->follow($followerId, $followedId);
+        if ($follow) {
+            return response()->json($follow, 200);
+        }
+    }
+
+    /**
+     * @param $followerId
+     * @param $followedId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function unfollow($followerId, $followedId)
+    {
+        $unfollow = $this->repository->unfollow($followedId, $followerId);
+        if ($unfollow) {
+            return response()->json(['msg' => Lang::get('message.unfollow_success')], 200);
+        }
     }
 
 }

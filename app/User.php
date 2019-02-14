@@ -85,7 +85,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 //    }
 
 
-/*********************  Foreign Keys are defined in reverse way for followers and followed          *********************************/
+/*********************  Foreign Keys are defined in reverse way for followers and followed ********************************
+ */
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

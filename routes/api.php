@@ -21,8 +21,8 @@ Route::get('/posts', 'v2\PostApiController@index');
 Route::apiResource('/post', 'v2\PostApiController')->only(['index', 'show']);
 Route::resource('/{post}/comment', 'CommentApiController')->only(['index']);
 
-Route::get('/get_user/{id}','UserController@getUser');
-Route::get('/get_posts/{userId}','PostApiController@index');
+Route::get('/get_user/{id}', 'UserController@getUser');
+Route::get('/get_posts/{userId}', 'PostApiController@index');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('refresh', 'AuthApiController@refresh');
@@ -38,16 +38,17 @@ Route::middleware('auth:api')->group(function () {
 
     Route::apiResource('/{user}/post', 'PostApiController');
 
+    Route::post('/post_image', 'PostApiController@postImage');
 
-
+    Route::get('/follow/{follower_id}/{followed_id}', 'UserController@follow');
+    Route::get('/unfollow/{follower_id}/{followed_id}', 'UserController@unfollow');
 });
+
+Route::get('/followers/{userId}', 'UserController@getFollowers');
+Route::get('/following/{userId}','UserController@getFollowing');
 
 // Testing api endpoints
 
-Route::post('/post_image','PostApiController@postImage');
 
-//Route::post('post_image', function (Request $request) {
-//    return response()->json($request->input('image'), 200);
-//});
 
 
