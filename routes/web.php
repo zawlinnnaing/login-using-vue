@@ -56,8 +56,12 @@ Route::post('/test_image', function (\Illuminate\Http\Request $request) {
 });
 
 
-Route::get('test_followers',function (){
-   \App\User::find(1)->first()->followed()->create(['followed_id' => 2]);
+Route::get('test_followers', function () {
+    \App\User::find(1)->first()->followed()->create(['followed_id' => 2]);
     \App\User::find(1)->first()->followed()->create(['followed_id' => 4]);
     dd(\App\User::find(1)->first()->followed()->get());
+});
+
+Route::get('test-public', function () {
+    dd(public_path('storage/profile_images'));
 });

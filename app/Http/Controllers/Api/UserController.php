@@ -52,6 +52,8 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
+        $profileDir = 'profile_images';
+
         $user = User::find($id);
         if (!$user) {
             return response()->json(Lang::get('invalid.user_not_found'), 403);
@@ -60,11 +62,11 @@ class UserController extends Controller
         if (!empty($request->input('image'))) {
             $user->update($request->except('image'));
             if (!empty($user->img_dir)) {
-                $this->deleteImage($user->img_dir, $this->profileDir);
+                $this->deleteImage($user->img_dir, $profileDir);
             }
             $image = $this->decodeImage($request->input('image'));
             $imageName = $user->name;
-            $path = $this->uploadImage($image, $this->profileDir, $imageName);
+            $path = $this->uploadImage($image, $profileDir, $imageName);
             if ($path) {
                 $user->update([
                     'img_dir' => $path
